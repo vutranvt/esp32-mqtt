@@ -296,7 +296,7 @@ static esp_err_t wifi_event_handler(void *ctx, system_event_t *event)
 
 void wifi_conn_init(void)
 {
-    INFO("[APP] Start, connect to Wifi network: %s ..\n", EXAMPLE_WIFI_SSID);
+    INFO("[APP] Start, connect to Wifi network: %s ..\n", WIFI_SSID);
 
     tcpip_adapter_init();
 
@@ -308,8 +308,8 @@ void wifi_conn_init(void)
 
     wifi_config_t wifi_config = {
         .sta = {
-            .ssid = EXAMPLE_WIFI_SSID,
-            .password = EXAMPLE_WIFI_PASS
+            .ssid = WIFI_SSID,
+            .password = WIFI_PASS
         },
     };
 

@@ -679,8 +679,8 @@ static bool read_past_http_header(char text[], int total_len, esp_ota_handle_t u
 
 static bool connect_to_http_server()
 {
-    ESP_LOGI(TAG, "Server IP: %s Server Port:%s", EXAMPLE_SERVER_IP, EXAMPLE_SERVER_PORT);
-    sprintf(http_request, "GET %s HTTP/1.1\r\nHost: %s:%s \r\n\r\n", EXAMPLE_FILENAME, EXAMPLE_SERVER_IP, EXAMPLE_SERVER_PORT);
+    ESP_LOGI(TAG, "Server IP: %s Server Port:%s", SERVER_IP, SERVER_PORT);
+    sprintf(http_request, "GET %s HTTP/1.1\r\nHost: %s:%s \r\n\r\n", FILENAME, SERVER_IP, SERVER_PORT);
 
     int  http_connect_flag = -1;
     struct sockaddr_in sock_info;
@@ -694,8 +694,8 @@ static bool connect_to_http_server()
     // set connect info
     memset(&sock_info, 0, sizeof(struct sockaddr_in));
     sock_info.sin_family = AF_INET;
-    sock_info.sin_addr.s_addr = inet_addr(EXAMPLE_SERVER_IP);
-    sock_info.sin_port = htons(atoi(EXAMPLE_SERVER_PORT));
+    sock_info.sin_addr.s_addr = inet_addr(SERVER_IP);
+    sock_info.sin_port = htons(atoi(SERVER_PORT));
 
     // connect to http server
     http_connect_flag = connect(socket_id, (struct sockaddr *)&sock_info, sizeof(sock_info));

@@ -28,8 +28,8 @@
 //#define CPU_FREQ_160MHZ
 
 // config wifi
-#define EXAMPLE_WIFI_SSID "Phong Ky Thuat"
-#define EXAMPLE_WIFI_PASS "123456789"
+#define WIFI_SSID "Phong Ky Thuat"
+#define WIFI_PASS "123456789"
 
 // config mqtt
 #define CLIENT_ID "30:AE:A4:08:6D:38"
@@ -44,9 +44,9 @@
 
 // config ota update firmware
 #define FIRMWARE_VERSION "1.0"
-#define EXAMPLE_SERVER_IP   "113.161.21.15"
-#define EXAMPLE_SERVER_PORT "8267"
-#define EXAMPLE_FILENAME "/version1.0.bin"
+#define SERVER_IP   "113.161.21.15"
+#define SERVER_PORT "8267"
+#define FILENAME "/version1.0.bin"
 #define BUFFSIZE 1024
 #define TEXT_BUFFSIZE 1024
 
