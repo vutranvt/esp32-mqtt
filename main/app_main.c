@@ -37,19 +37,19 @@
 #include "driver/adc.h"
 
 
-////wifi variable 
+// wifi variable 
 char macID[48];
 uint8_t sta_mac[6];
 
-////config command
+// config command to control esp32
 char rxCmd[7] = "";
 int icmd = 7;
-char cmdUpdate[7] = "CMD_UPD";
-char cmdGetMac[7] = "CMD_MAC";
-char cmdVersion[7] = "CMD_VER";
+char cmdUpdate[7] = "CMD_UPD";  // update new firmware
+char cmdGetMac[7] = "CMD_MAC";  // get mac address
+char cmdVersion[7] = "CMD_VER"; // get current firmware version
 
 
-////adc variable 
+// adc variable 
 volatile unsigned int counter1 = 0;
 volatile unsigned int counter2 = 0;
 volatile unsigned int counter3 = 0;
@@ -164,17 +164,22 @@ void data_cb(void *self, void *params)
     ////
     INFO("[APP] Publish data[%s]\n",event_data->data);////
 
+    // get receive command from server
     int i = 0;
     while(i<icmd){
     	rxCmd[i] = event_data->data[i];
     	i++;
     }
+
+    // update new firmware
     if(strcmp(rxCmd, cmdUpdate)==0){
     	INFO("[APP] Publish data[%s]\n",event_data->data);
     	INFO("[APP] update firmware ............\n");
 
 		ota_example_task(client);
     }
+
+    // publish mac address to broker
 	if(strcmp(rxCmd, cmdGetMac)==0){
         INFO("[APP] get mac id ............\n");
 
@@ -185,6 +190,8 @@ void data_cb(void *self, void *params)
         mqtt_publish(client, topicPub, macID, strlen(macID), 0, 0);
 		vTaskDelay(2000/portTICK_PERIOD_MS);
 	}
+
+    // publish current firmware version to broker
 	if(strcmp(rxCmd, cmdVersion)==0){
         INFO("[APP] get app version ............\n");   
 
@@ -513,7 +520,5 @@ void app_main()
     xTaskCreate(adc1Task, "adc1Task", 1024*3, NULL, 10, NULL);////
 	xTaskCreate(adc2Task, "adc2Task", 1024*3, NULL, 10, NULL);////
     xTaskCreate(adc3Task, "adc3Task", 1024*3, NULL, 10, NULL);////
-	
-	//ota_example_task();
 
 }
