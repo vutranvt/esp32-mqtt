@@ -517,6 +517,8 @@ void app_main()
 	INFO("[MQTT INFO] TOPIC SUBSCRIBE: %s\n", TOPIC_SUBSCRIBE);
 		*/
 		
+    // demo git branch <test>
+
     xTaskCreate(adc1Task, "adc1Task", 1024*3, NULL, 10, NULL);////
 	xTaskCreate(adc2Task, "adc2Task", 1024*3, NULL, 10, NULL);////
     xTaskCreate(adc3Task, "adc3Task", 1024*3, NULL, 10, NULL);////
