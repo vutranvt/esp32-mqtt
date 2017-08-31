@@ -155,8 +155,9 @@ void publish_cb(void *self, void *params)
     // cJSON_Print(root);
     //cJSON *string = cJSON_Parse(my_string);
     INFO("[JSON] root = %s\n", my_string);
-    cJSON_Print(string);
+    cJSON_Print(string);\
     //INFO("[JSON] root = %s\n", string);
+
 
 
 	sprintf(msgPublishAdc1, "%.0f", data1);
