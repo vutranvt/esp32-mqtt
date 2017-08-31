@@ -834,10 +834,10 @@ void ota_example_task(mqtt_client* client)
 
 	
 uint64_t get_macid(){
-	    //// Get MAC ADDRESS
+    // Get MAC ADDRESS
     uint64_t _chipmacid;
     esp_efuse_mac_get_default((uint8_t*) (&_chipmacid));
-	//INFO("ESP32 Chip ID = %04X",(uint16_t)(_chipmacid>>32));//print High 2 bytes
-	//INFO("%08X\n",(uint32_t)_chipmacid);//print Low 4bytes.	
+	// INFO("ESP32 Chip ID = %04X",(uint16_t)(_chipmacid>>32));//print High 2 bytes
+	// INFO("%08X\n",(uint32_t)_chipmacid);//print Low 4bytes.	
 	return _chipmacid;
 }

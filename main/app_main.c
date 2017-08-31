@@ -35,6 +35,8 @@
 #include <stdlib.h>
 #include "driver/gpio.h"
 #include "driver/adc.h"
+// json 
+#include "cJSON.h"
 
 
 // wifi variable 
@@ -62,6 +64,10 @@ volatile double maxAmpAdc3 = 0;
 char msgPublishAdc1[12];
 char msgPublishAdc2[6];
 char msgPublishAdc3[6];
+
+// config json for mqtt message
+
+
 
 
 void connected_cb(void *self, void *params)
@@ -106,10 +112,20 @@ void subscribe_cb(void *self, void *params)
     mqtt_publish(client, TOPIC_SUBSCRIBE, "reconnected", strlen("reconnected"), 0, 0);
     vTaskDelay(2000/portTICK_PERIOD_MS);
 }
-
+/*
+my json string = {
+    "id" : "30:AE:A4:08:6D:38",
+    "current" : {
+        "value1" : "112",
+        "value2" : "15",
+        "value3" : "0"     
+    }
+}
+*/
 
 void publish_cb(void *self, void *params)
 {
+    INFO("[JSON] cJSON AND PUBLISH .............. ");
 	mqtt_client *client = (mqtt_client *)self;
 	
 	double data1, data2, data3;
@@ -124,6 +140,17 @@ void publish_cb(void *self, void *params)
 	ampAdc3 = 0;
 	counter3 = 0;
 
+    cJSON *root;
+    cJSON *curt; 
+    root = cJSON_CreateObject();  
+    cJSON_AddItemToObject(root, "id", cJSON_CreateString(CLIENT_ID));
+    cJSON_AddItemToObject(root, "current", curt = cJSON_CreateObject());
+    // cJSON_AddStringToObject(curt,"type",     "rect");
+    cJSON_AddNumberToObject(curt, "value1", data1);
+    cJSON_AddNumberToObject(curt, "value2", data2);
+    cJSON_AddNumberToObject(curt, "value3", data3);
+    // cJSON_AddFalseToObject (curt,"interlace");
+
 	sprintf(msgPublishAdc1, "%.0f", data1);
 	sprintf(msgPublishAdc2, "%.0f", data2);
 	sprintf(msgPublishAdc3, "%.0f", data3);
@@ -132,6 +159,10 @@ void publish_cb(void *self, void *params)
 	strcat(msgPublishAdc1, "-");
 	strcat(msgPublishAdc1, msgPublishAdc3);
 	
+    // cJSON_Print(root);
+    
+    
+    // mqtt_publish(client, TOPIC_PUBLISH, msgPublishAdc1, strlen(msgPublishAdc1), 0, 0);
 	mqtt_publish(client, TOPIC_PUBLISH, msgPublishAdc1, strlen(msgPublishAdc1), 0, 0);
 	
 	vTaskDelay(5000/portTICK_PERIOD_MS);
@@ -471,19 +502,15 @@ void adc3Task(void* arg)
 		
     	result = result - 0.10;
 
-    	if(result<0.20){
+    	if(result<0.20)
     		result = 0;
-    	}else{
+    	else
     		result = result + 0.10;
-    	}
-		
-		
+    	
     	result = result * 10;
 		// printf("adc3 = %.2f\n",result);
 
     	ampAdc3 = (ampAdc3 + result) / (counter3 + 1);
-
-    	
     	counter3 = 1;
 
     	vTaskDelay(50/portTICK_PERIOD_MS);
@@ -507,15 +534,6 @@ void app_main()
  
     nvs_flash_init();
     wifi_conn_init();
-
-	/*
-	strcat(TOPIC_PUBLISH, CLIENT_ID);
-	strcat(TOPIC_SUBSCRIBE, CLIENT_ID);
-	strcat(TOPIC_SUBSCRIBE, "/info");
-
-	INFO("[MQTT INFO] TOPIC PUBLISH: %s\n", TOPIC_PUBLISH);
-	INFO("[MQTT INFO] TOPIC SUBSCRIBE: %s\n", TOPIC_SUBSCRIBE);
-		*/
 		
     xTaskCreate(adc1Task, "adc1Task", 1024*3, NULL, 10, NULL);////
 	xTaskCreate(adc2Task, "adc2Task", 1024*3, NULL, 10, NULL);////
