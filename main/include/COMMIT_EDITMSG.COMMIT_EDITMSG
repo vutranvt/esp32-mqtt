@@ -1,0 +1,17 @@
+test branh om sublime editor
+
+# --------------
+# Please enter the commit message for your changes. Everything below
+# this paragraph is ignored, and an empty message aborts the commit.
+# Just close the window to accept your message.
+diff --git a/main/include/user_config.sample.h b/main/include/user_config.sample.h
+index 278d2fe..323a237 100644
+--- a/main/include/user_config.sample.h
++++ b/main/include/user_config.sample.h
+@@ -59,8 +59,7 @@
+ #define adcZero2 2217
+ #define adcZero3 2291
+ 
+-
+-
++// change to branch develop on sublime
