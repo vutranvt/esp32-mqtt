@@ -134,7 +134,7 @@ void publish_cb(void *self, void *params)
 	
 	mqtt_publish(client, TOPIC_PUBLISH, msgPublishAdc1, strlen(msgPublishAdc1), 0, 0);
 	
-	vTaskDelay(2000/portTICK_PERIOD_MS);
+	vTaskDelay(5000/portTICK_PERIOD_MS);
 }
 
 void data_cb(void *self, void *params)

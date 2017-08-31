@@ -33,10 +33,10 @@
 
 // config mqtt
 #define CLIENT_ID "30:AE:A4:08:6D:38"
-#define TOPIC_PUBLISH "hue/tudien1"
-#define TOPIC_SUBSCRIBE "hue/tudien1/control"
-#define TOPIC_LWT "hue/lwt"
-#define MESSAGE_LWT "offline_30:AE:A4:08:6D:38"
+#define TOPIC_PUBLISH "hue/30:AE:A4:08:6D:38"
+#define TOPIC_SUBSCRIBE "hue/30:AE:A4:08:6D:38/control"
+#define TOPIC_LWT "hue/30:AE:A4:08:6D:38/lwt"
+#define MESSAGE_LWT "offline"
 
 // config mqtt for sensor device
 #define TOPIC_MAC_ADDRESS "/macaddress"
