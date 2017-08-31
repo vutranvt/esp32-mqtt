@@ -140,16 +140,24 @@ void publish_cb(void *self, void *params)
 	ampAdc3 = 0;
 	counter3 = 0;
 
+    char my_string = "{\"value1\" : \"123\"}";
     cJSON *root;
     cJSON *curt; 
     root = cJSON_CreateObject();  
-    cJSON_AddItemToObject(root, "id", cJSON_CreateString(CLIENT_ID));
+    // cJSON_AddItemToObject(root, "id", cJSON_CreateString(CLIENT_ID));
+    cJSON_AddItemToObject(root, "id", cJSON_CreateString("30:AE:A4:08:6D:38"));
     cJSON_AddItemToObject(root, "current", curt = cJSON_CreateObject());
     // cJSON_AddStringToObject(curt,"type",     "rect");
-    cJSON_AddNumberToObject(curt, "value1", data1);
-    cJSON_AddNumberToObject(curt, "value2", data2);
-    cJSON_AddNumberToObject(curt, "value3", data3);
+    cJSON_AddNumberToObject(curt, "value1", 185);
+    cJSON_AddNumberToObject(curt, "value2", 11);
+    cJSON_AddNumberToObject(curt, "value3", 1);
     // cJSON_AddFalseToObject (curt,"interlace");
+    // cJSON_Print(root);
+    //cJSON *string = cJSON_Parse(my_string);
+    INFO("[JSON] root = %s\n", my_string);
+    cJSON_Print(string);
+    //INFO("[JSON] root = %s\n", string);
+
 
 	sprintf(msgPublishAdc1, "%.0f", data1);
 	sprintf(msgPublishAdc2, "%.0f", data2);
@@ -159,7 +167,6 @@ void publish_cb(void *self, void *params)
 	strcat(msgPublishAdc1, "-");
 	strcat(msgPublishAdc1, msgPublishAdc3);
 	
-    // cJSON_Print(root);
     
     
     // mqtt_publish(client, TOPIC_PUBLISH, msgPublishAdc1, strlen(msgPublishAdc1), 0, 0);
