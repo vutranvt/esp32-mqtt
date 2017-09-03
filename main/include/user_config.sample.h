@@ -33,9 +33,9 @@
 
 // config mqtt
 #define CLIENT_ID "30:AE:A4:08:6D:38"
-#define TOPIC_PUBLISH "hue/30:AE:A4:08:6D:38"
-#define TOPIC_SUBSCRIBE "hue/30:AE:A4:08:6D:38/control"
-#define TOPIC_LWT "hue/30:AE:A4:08:6D:38/lwt"
+#define TOPIC_PUBLISH "hue/current"
+#define TOPIC_SUBSCRIBE "hue/current/control"
+#define TOPIC_LWT "hue/current/lwt"
 #define MESSAGE_LWT "offline"
 
 // config mqtt for sensor device

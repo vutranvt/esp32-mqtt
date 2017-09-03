@@ -112,16 +112,35 @@ void subscribe_cb(void *self, void *params)
     mqtt_publish(client, TOPIC_SUBSCRIBE, "reconnected", strlen("reconnected"), 0, 0);
     vTaskDelay(2000/portTICK_PERIOD_MS);
 }
-/*
-my json string = {
-    "id" : "30:AE:A4:08:6D:38",
+
+/* json string encode
+json_string = {
+    "id" : "30:AE:A4:08:6D:38", // sensor mac id 
     "current" : {
-        "value1" : "112",
-        "value2" : "15",
-        "value3" : "0"     
+        "value1" : "112",   // phase1 value
+        "value2" : "15",    // phase2 value
+        "value3" : "0"      // phase3 value
     }
 }
 */
+cJSON jsonStringEncode (double data1, double data2, double data3) {
+    cJSON *jsonString;  // json string
+    cJSON *current;     // json child
+    
+    jsonString = cJSON_CreateObject();  
+
+    cJSON_AddItemToObject(jsonString, "id", cJSON_CreateString(CLIENT_ID));
+    cJSON_AddItemToObject(jsonString, "current", current = cJSON_CreateObject());
+    cJSON_AddNumberToObject(current, "value1", data1);
+    cJSON_AddNumberToObject(current, "value2", data2);
+    cJSON_AddNumberToObject(current, "value3", data3);
+    // cJSON_AddFalseToObject (current,"interlace");
+    // cJSON_AddStringToObject(current,"type",     "rect");
+    //cJSON *string = cJSON_Parse(my_string);
+    
+    return jsonString;
+}
+
 
 void publish_cb(void *self, void *params)
 {
@@ -140,27 +159,11 @@ void publish_cb(void *self, void *params)
 	ampAdc3 = 0;
 	counter3 = 0;
 
-    // char *my_string = "{\"value1\" : \"123\"}";
     cJSON *root;
-    cJSON *curt; 
-    root = cJSON_CreateObject();  
-    // cJSON_AddItemToObject(root, "id", cJSON_CreateString(CLIENT_ID));
-    cJSON_AddItemToObject(root, "id", cJSON_CreateString(CLIENT_ID));
-    cJSON_AddItemToObject(root, "current", curt = cJSON_CreateObject());
-    // cJSON_AddStringToObject(curt,"type",     "rect");
-    cJSON_AddNumberToObject(curt, "value1", data1);
-    cJSON_AddNumberToObject(curt, "value2", data2);
-    cJSON_AddNumberToObject(curt, "value3", data3);
-    // cJSON_AddFalseToObject (curt,"interlace");
-    // cJSON_Print(root);
-    //cJSON *string = cJSON_Parse(my_string);
-    
-    //cJSON_Print(string);
-    //INFO("[JSON] root = %s\n", string);
-    // test_demo git on sublime in "develop" branch
-    char *rendered = cJSON_Print(root);
+    root = jsonStringEncode(data1, data1, data3);
+    char *jsonMsg = cJSON_Print(root);
     cJSON_Delete(root);
-    INFO("[JSON] root = %s\n", rendered);
+    INFO("[JSON] root = %s\n", jsonMsg);
 
 
 	sprintf(msgPublishAdc1, "%.0f", data1);
@@ -174,7 +177,7 @@ void publish_cb(void *self, void *params)
     
     
     // mqtt_publish(client, TOPIC_PUBLISH, msgPublishAdc1, strlen(msgPublishAdc1), 0, 0);
-	mqtt_publish(client, TOPIC_PUBLISH, rendered, strlen(rendered), 0, 0);
+	mqtt_publish(client, TOPIC_PUBLISH, jsonMsg, strlen(jsonMsg), 0, 0);
 	
 	vTaskDelay(5000/portTICK_PERIOD_MS);
 }
