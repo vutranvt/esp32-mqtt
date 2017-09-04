@@ -44,11 +44,9 @@ char macID[48];
 uint8_t sta_mac[6];
 
 // config command to control esp32
-char rxCmd[7] = "";
-int icmd = 7;
-char cmdUpdate[7] = "CMD_UPD";  // update new firmware
-char cmdGetMac[7] = "CMD_MAC";  // get mac address
-char cmdVersion[7] = "CMD_VER"; // get current firmware version
+char cmdUpdate[20] = "update";  // update new firmware
+char cmdGetMac[20] = "get_mac_address";  // get mac address
+char cmdGetVersion[20] = "get_version"; // get current firmware version
 
 
 // adc variable 
@@ -113,8 +111,26 @@ void subscribe_cb(void *self, void *params)
     vTaskDelay(2000/portTICK_PERIOD_MS);
 }
 
-/* json string encode
-json_string = {
+/*json_command from server to esp32
+json_cmd = {
+    "id" : "30:AE:A4:08:6D:38", // sensor mac id 
+    "cmd" : "update"            // "get_version" "adc_mode_max" "adc_mode_average"
+}
+*/
+
+char *jsonCmdDecode(char *string) {
+    cJSON *jsonCmd;
+    jsonCmd = cJSON_Parse(string);
+    //char *jsonID = cJSON_GetObjectItem(jsonCmd, "id")->valuestring;
+    char *jsonMsg = cJSON_Print(jsonCmd);
+    char *jsonID = "";
+    cJSON_Delete(jsonCmd);
+    INFO("[JSON] root = %s\n", jsonMsg);
+    return jsonID;
+}
+
+/* json_data send to server
+json_data = {
     "id" : "30:AE:A4:08:6D:38", // sensor mac id 
     "current" : {
         "value1" : "112",   // phase1 value
@@ -123,7 +139,7 @@ json_string = {
     }
 }
 */
-cJSON jsonStringEncode (double data1, double data2, double data3) {
+cJSON *jsonDataEncode (double data1, double data2, double data3) {
     cJSON *jsonString;  // json string
     cJSON *current;     // json child
     
@@ -136,8 +152,8 @@ cJSON jsonStringEncode (double data1, double data2, double data3) {
     cJSON_AddNumberToObject(current, "value3", data3);
     // cJSON_AddFalseToObject (current,"interlace");
     // cJSON_AddStringToObject(current,"type",     "rect");
-    //cJSON *string = cJSON_Parse(my_string);
-    
+    // double d = cJSON_GetObjectItem(current, "value1")->valuedouble;
+    // char *c = cJSON_GetObjectItem(jsonString, "id")->valuestring;
     return jsonString;
 }
 
@@ -160,10 +176,10 @@ void publish_cb(void *self, void *params)
 	counter3 = 0;
 
     cJSON *root;
-    root = jsonStringEncode(data1, data1, data3);
+    root = jsonDataEncode(data1, data2, data3);
     char *jsonMsg = cJSON_Print(root);
     cJSON_Delete(root);
-    INFO("[JSON] root = %s\n", jsonMsg);
+    // INFO("[JSON] root = %s\n", jsonMsg);
 
 
 	sprintf(msgPublishAdc1, "%.0f", data1);
@@ -196,57 +212,68 @@ void data_cb(void *self, void *params)
         free(topic);
     }
 
-    // char *data = malloc(event_data->data_length + 1);
-    // memcpy(data, event_data->data, event_data->data_length);
-    // data[event_data->data_length] = 0;
-    INFO("[APP] Publish data[%d/%d bytes]\n",
-         event_data->data_length + event_data->data_offset,
-         event_data->data_total_length);
-         // data);
+    INFO("[APP] Publish data[%d/%d bytes]\n", event_data->data_length + event_data->data_offset, event_data->data_total_length);
 
-    // free(data);
+    uint16_t i = 0;
+    uint16_t j = event_data->data_total_length;
+    //char c= "";
+    int count = 0;
+    int m = 0;
+    int n = 0;
+    char mac[30] = "";
+    char cmd[30] = "";
 
-    ////
-    INFO("[APP] Publish data[%s]\n",event_data->data);////
-
-    // get receive command from server
-    int i = 0;
-    while(i<icmd){
-    	rxCmd[i] = event_data->data[i];
-    	i++;
+    while(i<j){
+        char c = event_data->data[i];
+        if(c=='\"') 
+            count++;
+        if(count==3){
+            if(m!=0)
+                mac[m-1] = c;
+            m++;
+        }
+        if(count==7){
+            if(n!=0)
+                cmd[n-1] = c;
+            n++;
+        }
+        i++;
     }
 
-    // update new firmware
-    if(strcmp(rxCmd, cmdUpdate)==0){
-    	INFO("[APP] Publish data[%s]\n",event_data->data);
-    	INFO("[APP] update firmware ............\n");
+    if(!strcmp(mac, macID)){
+        // update firmware
+        INFO("[APP] update firmware ............\n");
+        if(strcmp(cmd, cmdUpdate)==0){
+            INFO("[APP] Publish data[%s]\n",event_data->data);
+            INFO("[APP] update firmware ............\n");
 
-		ota_example_task(client);
+            ota_example_task(client);
+        }
+
+        // publish mac address to broker
+        if(strcmp(cmd, cmdGetMac)==0){
+            INFO("[APP] get mac id ............\n");
+
+            char topicPub[48] = "";
+            strcat(topicPub, TOPIC_PUBLISH);
+            strcat(topicPub, TOPIC_MAC_ADDRESS);
+
+            mqtt_publish(client, topicPub, macID, strlen(macID), 0, 0);
+            vTaskDelay(2000/portTICK_PERIOD_MS);
+        }
+
+        // publish current firmware version to broker
+        if(strcmp(cmd, cmdGetVersion)==0){
+            INFO("[APP] get app version ............\n");   
+
+            char topicPub[48] = "";
+            strcat(topicPub, TOPIC_PUBLISH);
+            strcat(topicPub, TOPIC_FIRMWARE_VERSION);
+
+            mqtt_publish(client, topicPub, FIRMWARE_VERSION, strlen(FIRMWARE_VERSION), 0, 0);
+            vTaskDelay(2000/portTICK_PERIOD_MS);
+        }
     }
-
-    // publish mac address to broker
-	if(strcmp(rxCmd, cmdGetMac)==0){
-        INFO("[APP] get mac id ............\n");
-
-        char topicPub[48] = "";
-        strcat(topicPub, TOPIC_PUBLISH);
-        strcat(topicPub, TOPIC_MAC_ADDRESS);
-
-        mqtt_publish(client, topicPub, macID, strlen(macID), 0, 0);
-		vTaskDelay(2000/portTICK_PERIOD_MS);
-	}
-
-    // publish current firmware version to broker
-	if(strcmp(rxCmd, cmdVersion)==0){
-        INFO("[APP] get app version ............\n");   
-
-        char topicPub[48] = "";
-        strcat(topicPub, TOPIC_PUBLISH);
-        strcat(topicPub, TOPIC_FIRMWARE_VERSION);
-
-		mqtt_publish(client, topicPub, FIRMWARE_VERSION, strlen(FIRMWARE_VERSION), 0, 0);
-		vTaskDelay(2000/portTICK_PERIOD_MS);
-	}
 }
 
 mqtt_settings settings = {

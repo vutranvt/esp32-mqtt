@@ -32,10 +32,10 @@
 #define WIFI_PASS "123456789"
 
 // config mqtt
-#define CLIENT_ID "30:AE:A4:08:6D:38"
-#define TOPIC_PUBLISH "hue/current"
-#define TOPIC_SUBSCRIBE "hue/current/control"
-#define TOPIC_LWT "hue/current/lwt"
+#define CLIENT_ID "24:0A:C4:10:F9:C8"
+#define TOPIC_PUBLISH "hue/current/tutong"
+#define TOPIC_SUBSCRIBE "hue/current/tutong/control"
+#define TOPIC_LWT "hue/current/tutong/lwt"
 #define MESSAGE_LWT "offline"
 
 // config mqtt for sensor device
@@ -46,7 +46,7 @@
 #define FIRMWARE_VERSION "1.0"
 #define SERVER_IP   "113.161.21.15"
 #define SERVER_PORT "8267"
-#define FILENAME "/version1.0.bin"
+#define FILENAME "/current-V1.0.bin"
 #define BUFFSIZE 1024
 #define TEXT_BUFFSIZE 1024
 
