@@ -150,14 +150,12 @@ cJSON *jsonDataEncode (double data1, double data2, double data3) {
     cJSON_AddNumberToObject(current, "value1", data1);
     cJSON_AddNumberToObject(current, "value2", data2);
     cJSON_AddNumberToObject(current, "value3", data3);
-    // cJSON_AddFalseToObject (current,"interlace");
-    // cJSON_AddStringToObject(current,"type",     "rect");
-    // double d = cJSON_GetObjectItem(current, "value1")->valuedouble;
-    // char *c = cJSON_GetObjectItem(jsonString, "id")->valuestring;
+
     return jsonString;
 }
 
 
+ 
 void publish_cb(void *self, void *params)
 {
     INFO("[JSON] cJSON AND PUBLISH .............. ");
@@ -165,13 +163,13 @@ void publish_cb(void *self, void *params)
 	
 	double data1, data2, data3;
 	
-	data1 = ampAdc1;
+	data1 = ceilf(ampAdc1);
 	ampAdc1 = 0;
 	counter1 = 0;
-	data2 = ampAdc2;
+	data2 = ceilf(ampAdc2);
 	ampAdc2 = 0;
 	counter2 = 0;
-	data3 = ampAdc3;
+	data3 = ceilf(ampAdc3);
 	ampAdc3 = 0;
 	counter3 = 0;
 
