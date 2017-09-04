@@ -373,6 +373,8 @@ void deliver_publish(mqtt_client *client, uint8_t *message, int length)
         event_data.data_length = mqtt_len;
 
         mqtt_info("Data received: %d/%d bytes ", mqtt_len, total_mqtt_len);
+        // config restart if the server broker happenned stopped  v
+        if(total_mqtt_len == (-65323))  esp_restart();
 
         if(client->settings->data_cb) {
             client->settings->data_cb(client, &event_data);
