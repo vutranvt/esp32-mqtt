@@ -59,9 +59,7 @@ volatile double ampAdc3 = 0;
 volatile double maxAmpAdc1 = 0;
 volatile double maxAmpAdc2 = 0;
 volatile double maxAmpAdc3 = 0;
-char msgPublishAdc1[12];
-char msgPublishAdc2[6];
-char msgPublishAdc3[6];
+
 
 /* FreeRTOS event group to signal when we are connected & ready to make a request */
 static EventGroupHandle_t wifi_event_group;
@@ -94,9 +92,13 @@ void publish_data(void *self, void *params)
     char msgPublish[48] = "";
 
     strcat(topicPublish, TOPIC_PUBLISH);
+    // strcat(topicPublish, DEVICE_FUCTION);
+    // strcat(topicPublish, "/");
+    // strcat(topicPublish, DEVICE_POSITION);
     strcat(topicPublish, TOPIC_FIRMWARE_VERSION);
     strcat(msgPublish, "FIRMWARE VERSION: ");
     strcat(msgPublish, FIRMWARE_VERSION);
+
 
     INFO("[APP] Version: %s\n", topicPublish);
 
@@ -135,7 +137,9 @@ char *jsonCmdDecode(char *string) {
 
 /* json_data send to server
 json_data = {
-    "id" : "30:AE:A4:08:6D:38", // sensor mac id 
+    "mac" : "30:AE:A4:08:6D:38", // sensor mac id 
+    "center" : "bmt",
+    "position" : "tudien_nong",
     "current" : {
         "value1" : "112",   // phase1 value
         "value2" : "15",    // phase2 value
@@ -149,7 +153,9 @@ cJSON *jsonDataEncode (double data1, double data2, double data3) {
     
     jsonString = cJSON_CreateObject();  
 
-    cJSON_AddItemToObject(jsonString, "id", cJSON_CreateString(CLIENT_ID));
+    cJSON_AddItemToObject(jsonString, "mac", cJSON_CreateString(CLIENT_ID));
+    cJSON_AddItemToObject(jsonString, "center", cJSON_CreateString(CENTER_NAME));
+    cJSON_AddItemToObject(jsonString, "position", cJSON_CreateString(DEVICE_POSITION));
     cJSON_AddItemToObject(jsonString, "current", current = cJSON_CreateObject());
     cJSON_AddNumberToObject(current, "value1", data1);
     cJSON_AddNumberToObject(current, "value2", data2);
@@ -182,21 +188,8 @@ void publish_cb(void *self, void *params)
     char *jsonMsg = cJSON_Print(root);
     cJSON_Delete(root);
     // INFO("[JSON] root = %s\n", jsonMsg);
-
-
-	sprintf(msgPublishAdc1, "%.0f", data1);
-	sprintf(msgPublishAdc2, "%.0f", data2);
-	sprintf(msgPublishAdc3, "%.0f", data3);
-	strcat(msgPublishAdc1, "-");
-	strcat(msgPublishAdc1, msgPublishAdc2);
-	strcat(msgPublishAdc1, "-");
-	strcat(msgPublishAdc1, msgPublishAdc3);
-	
     
-    
-    // mqtt_publish(client, TOPIC_PUBLISH, msgPublishAdc1, strlen(msgPublishAdc1), 0, 0);
 	mqtt_publish(client, TOPIC_PUBLISH, jsonMsg, strlen(jsonMsg), 0, 0);
-	
 	vTaskDelay(5000/portTICK_PERIOD_MS);
 }
 
@@ -286,8 +279,8 @@ mqtt_settings settings = {
     .port = 1883, // unencrypted
 #endif    
     .client_id = CLIENT_ID,
-    .username = "esp32",
-    .password = "mtt@23377",
+    .username = MQTT_USERNAME,
+    .password = MQTT_PASSWORD,
     .clean_session = 0,
     .keepalive = 50,
     .lwt_topic = TOPIC_LWT,

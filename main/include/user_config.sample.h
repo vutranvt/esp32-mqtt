@@ -31,12 +31,21 @@
 #define WIFI_SSID "Phong Ky Thuat"
 #define WIFI_PASS "123456789"
 
-// config mqtt
-#define CLIENT_ID "24:0A:C4:10:F9:C8"
-#define TOPIC_PUBLISH "hue/current/tutong"
-#define TOPIC_SUBSCRIBE "hue/current/tutong/control"
-#define TOPIC_LWT "hue/current/tutong/lwt"
+//config mqtt user
+#define CLIENT_ID "24:0A:C4:10:F9:C8"	// asjust mqtt id client for each device
+#define MQTT_USERNAME "esp32"
+#define MQTT_PASSWORD "mtt@23377"
+
+//config mqtt topic
+#define TOPIC_PUBLISH "current/tudien_tong"				// config topic: "function/ position" for device
+#define TOPIC_SUBSCRIBE "current/tudien_tong/control"
+#define TOPIC_LWT "current/tudien_tong/lwt"
 #define MESSAGE_LWT "offline"
+
+//config function of device 
+#define CENTER_NAME "hue"			// config center for each device
+#define DEVICE_FUNCTION "current"	// config function for each device
+#define DEVICE_POSITION "tudien_tong"	// config position of device
 
 // config mqtt for sensor device
 #define TOPIC_MAC_ADDRESS "/macaddress"
@@ -46,7 +55,7 @@
 #define FIRMWARE_VERSION "1.0"
 #define SERVER_IP   "113.161.21.15"
 #define SERVER_PORT "8267"
-#define FILENAME "/current-V1.0.bin"
+#define FILENAME "/current-v1.0.bin"
 #define BUFFSIZE 1024
 #define TEXT_BUFFSIZE 1024
 
