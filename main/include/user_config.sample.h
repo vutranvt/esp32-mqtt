@@ -33,6 +33,8 @@
 
 // config mqtt
 #define CLIENT_ID "30:AE:A4:08:6D:38"
+#define MQTT_USERNAME "esp32"
+#define MQTT_PASSWORD "mtt@23377"
 #define TOPIC_PUBLISH "hue/30:AE:A4:08:6D:38"
 #define TOPIC_SUBSCRIBE "hue/30:AE:A4:08:6D:38/control"
 #define TOPIC_LWT "hue/30:AE:A4:08:6D:38/lwt"
