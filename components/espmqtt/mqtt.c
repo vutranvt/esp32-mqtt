@@ -471,6 +471,7 @@ void mqtt_start_receive_schedule(mqtt_client* client)
         mqtt_info("End of mqtt_start_receive_schedule............................................................");////
     }
     mqtt_info("network disconnected");
+    esp_restart();  // config restart -v
 }
 
 void mqtt_destroy(mqtt_client *client)
@@ -481,6 +482,7 @@ void mqtt_destroy(mqtt_client *client)
     vTaskDelete(xMqttSendingTask);
 	vTaskDelete(xMqttStartReceiveSchedule);
 	
+    esp_restart();
 }
 
 void mqtt_task(void *pvParameters)
@@ -530,6 +532,7 @@ void mqtt_task(void *pvParameters)
 		vTaskDelay(1000 / portTICK_RATE_MS);
 
     }
+    mqtt_info("End of Mqtt-Task:::::::::::::::::");
     mqtt_destroy(client);
 
 }
