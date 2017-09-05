@@ -63,9 +63,13 @@ char msgPublishAdc1[12];
 char msgPublishAdc2[6];
 char msgPublishAdc3[6];
 
-// config json for mqtt message
+/* FreeRTOS event group to signal when we are connected & ready to make a request */
+static EventGroupHandle_t wifi_event_group;
 
-
+/* The event group allows multiple bits for each event,
+   but we only care about one event - are we connected
+   to the AP with an IP? */
+const int CONNECTED_BIT = BIT0;
 
 
 void connected_cb(void *self, void *params)
@@ -351,16 +355,16 @@ static esp_err_t wifi_event_handler(void *ctx, system_event_t *event)
         break;
 
     case SYSTEM_EVENT_STA_GOT_IP:
-
-    	//xTaskCreate(&ota_example_task, "ota_example_task", 8192, NULL, 5, NULL);////
-    	mqtt_start(&settings);
+        xEventGroupSetBits(wifi_event_group, CONNECTED_BIT);
+        mqtt_start(&settings);
         // Notice that, all callback will called in mqtt_task
         // All function publish, subscribe
         break;
     case SYSTEM_EVENT_STA_DISCONNECTED:
-        
+        esp_wifi_connect();
         mqtt_stop();
-        ESP_ERROR_CHECK(esp_wifi_connect());
+        //ESP_ERROR_CHECK(esp_wifi_connect());
+        xEventGroupSetBits(wifi_event_group, CONNECTED_BIT);    
         break;
     default:
         break;
@@ -376,7 +380,7 @@ void wifi_conn_init(void)
     INFO("[APP] Start, connect to Wifi network: %s ..\n", WIFI_SSID);
 
     tcpip_adapter_init();
-
+    wifi_event_group = xEventGroupCreate();
     ESP_ERROR_CHECK( esp_event_loop_init(wifi_event_handler, NULL) );
 
     wifi_init_config_t icfg = WIFI_INIT_CONFIG_DEFAULT();
