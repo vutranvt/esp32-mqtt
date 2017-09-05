@@ -212,8 +212,8 @@ mqtt_settings settings = {
     .port = 1883, // unencrypted
 #endif    
     .client_id = CLIENT_ID,
-    .username = "esp32",
-    .password = "mtt@23377",
+    .username = MQTT_USERNAME,
+    .password = MQTT_PASSWORD,
     .clean_session = 0,
     .keepalive = 50,
     .lwt_topic = TOPIC_LWT,

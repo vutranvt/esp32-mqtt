@@ -31,16 +31,17 @@
 #define WIFI_SSID "Phong Ky Thuat"
 #define WIFI_PASS "123456789"
 
-// config mqtt
+// config mqtt-user
 #define CLIENT_ID "30:AE:A4:08:6D:38"
 #define MQTT_USERNAME "esp32"
 #define MQTT_PASSWORD "mtt@23377"
+
+//config mqtt topic
 #define TOPIC_PUBLISH "hue/30:AE:A4:08:6D:38"
 #define TOPIC_SUBSCRIBE "hue/30:AE:A4:08:6D:38/control"
 #define TOPIC_LWT "hue/30:AE:A4:08:6D:38/lwt"
 #define MESSAGE_LWT "offline"
 
-// config mqtt for sensor device
 #define TOPIC_MAC_ADDRESS "/macaddress"
 #define TOPIC_FIRMWARE_VERSION "/firmwareversion"
 
