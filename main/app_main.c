@@ -73,7 +73,12 @@ const int CONNECTED_BIT = BIT0;
 void connected_cb(void *self, void *params)
 {
     mqtt_client *client = (mqtt_client *)self;
-    mqtt_subscribe(client, TOPIC_SUBSCRIBE, 0);
+
+    char topicPublish[48] = "";
+    strcat(topicPublish, TOPIC_PUBLISH);
+    strcat(topicPublish, TOPIC_MAC_ADDRESS);
+
+    mqtt_subscribe(client, topicPublish, 0);
     // mqtt_subscribe(client, TOPIC_PUBLISH, 0);
 
 }
@@ -92,35 +97,35 @@ void publish_data(void *self, void *params)
     char msgPublish[48] = "";
 
     strcat(topicPublish, TOPIC_PUBLISH);
-    // strcat(topicPublish, DEVICE_FUCTION);
-    // strcat(topicPublish, "/");
-    // strcat(topicPublish, DEVICE_POSITION);
-    strcat(topicPublish, TOPIC_FIRMWARE_VERSION);
-    strcat(msgPublish, "FIRMWARE VERSION: ");
-    strcat(msgPublish, FIRMWARE_VERSION);
 
-
-    INFO("[APP] Version: %s\n", topicPublish);
-
+    strcat(topicPublish, TOPIC_MAC_ADDRESS);
+    // strcat(msgPublish, "Mac Address:");
+    // strcat(msgPublish, macID);
+    // INFO("[APP] Version: %s\n", topicPublish);
 
     mqtt_subscribe(client, TOPIC_PUBLISH, 0);
-    // mqtt_subscribe(client, TOPIC_PUBLISH, 0);
+
     vTaskDelay(2000/portTICK_PERIOD_MS);
-	mqtt_publish(client, TOPIC_SUBSCRIBE, msgPublish, strlen(msgPublish), 0, 0);
+
+	mqtt_publish(client, topicPublish, macID, strlen(macID), 0, 0);
 	vTaskDelay(2000/portTICK_PERIOD_MS);
 }
 void subscribe_cb(void *self, void *params)
 {
     INFO("[APP] Subscribe ok, test publish msg\n");
     mqtt_client *client = (mqtt_client *)self;
-    mqtt_publish(client, TOPIC_SUBSCRIBE, "reconnected", strlen("reconnected"), 0, 0);
+
+    char topicPublish[48] = "";
+    strcat(topicPublish, TOPIC_PUBLISH);
+    strcat(topicPublish, TOPIC_MAC_ADDRESS);
+
+    mqtt_publish(client, topicPublish, macID, strlen(macID), 0, 0);
     vTaskDelay(2000/portTICK_PERIOD_MS);
 }
 
 /*json_command from server to esp32
 json_cmd = {
-    "id" : "30:AE:A4:08:6D:38", // sensor mac id 
-    "cmd" : "update"            // "get_version" "adc_mode_max" "adc_mode_average"
+    "id" : "30:AE:A4:08:6D:38", "cmd" : "update"            // "get_version" "adc_mode_max" "adc_mode_average"
 }
 */
 
@@ -153,13 +158,13 @@ cJSON *jsonDataEncode (double data1, double data2, double data3) {
     
     jsonString = cJSON_CreateObject();  
 
-    cJSON_AddItemToObject(jsonString, "mac", cJSON_CreateString(CLIENT_ID));
-    cJSON_AddItemToObject(jsonString, "center", cJSON_CreateString(CENTER_NAME));
-    cJSON_AddItemToObject(jsonString, "position", cJSON_CreateString(DEVICE_POSITION));
-    cJSON_AddItemToObject(jsonString, "current", current = cJSON_CreateObject());
-    cJSON_AddNumberToObject(current, "value1", data1);
-    cJSON_AddNumberToObject(current, "value2", data2);
-    cJSON_AddNumberToObject(current, "value3", data3);
+    // cJSON_AddItemToObject(jsonString, "mac", cJSON_CreateString(CLIENT_ID));
+    // cJSON_AddItemToObject(jsonString, "center", cJSON_CreateString(CENTER_NAME));
+    // cJSON_AddItemToObject(jsonString, "position", cJSON_CreateString(DEVICE_POSITION));
+    // cJSON_AddItemToObject(jsonString, "current", current = cJSON_CreateObject());
+    cJSON_AddNumberToObject(jsonString, "value1", data1);
+    cJSON_AddNumberToObject(jsonString, "value2", data2);
+    cJSON_AddNumberToObject(jsonString, "value3", data3);
 
     return jsonString;
 }

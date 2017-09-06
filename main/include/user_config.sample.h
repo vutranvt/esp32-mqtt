@@ -32,20 +32,21 @@
 #define WIFI_PASS "123456789"
 
 //config mqtt user
-#define CLIENT_ID "24:0A:C4:10:F9:C8"	// asjust mqtt id client for each device
+// #define CLIENT_ID "24:0A:C4:10:F9:C8"	// asjust mqtt id client for each device
+#define CLIENT_ID "30:AE:A4:08:6D:38"	
 #define MQTT_USERNAME "esp32"
 #define MQTT_PASSWORD "mtt@23377"
 
 //config mqtt topic
-#define TOPIC_PUBLISH "current/tudien_tong"				// config topic: "function/ position" for device
-#define TOPIC_SUBSCRIBE "current/tudien_tong/control"
-#define TOPIC_LWT "current/tudien_tong/lwt"
+#define TOPIC_PUBLISH "hue/current/tudien_2"				// config topic: "function/ position" for device
+#define TOPIC_SUBSCRIBE "hue/current/tudien_2"
+#define TOPIC_LWT "hue/current/tudien_2/lwt"
 #define MESSAGE_LWT "offline"
 
 //config function of device 
 #define CENTER_NAME "hue"			// config center for each device
 #define DEVICE_FUNCTION "current"	// config function for each device
-#define DEVICE_POSITION "tudien_tong"	// config position of device
+#define DEVICE_POSITION "tudien_2"	// config position of device
 
 // config mqtt for sensor device
 #define TOPIC_MAC_ADDRESS "/macaddress"
