@@ -158,7 +158,7 @@ cJSON *jsonDataEncode (double data1, double data2, double data3) {
     
     jsonString = cJSON_CreateObject();  
 
-    cJSON_AddItemToObject(jsonString, "mac", cJSON_CreateString(CLIENT_ID));
+    // cJSON_AddItemToObject(jsonString, "mac", cJSON_CreateString(CLIENT_ID));
     cJSON_AddItemToObject(jsonString, "center", cJSON_CreateString(CENTER_NAME));
     cJSON_AddItemToObject(jsonString, "position", cJSON_CreateString(DEVICE_POSITION));
     cJSON_AddItemToObject(jsonString, "current", current = cJSON_CreateObject());
