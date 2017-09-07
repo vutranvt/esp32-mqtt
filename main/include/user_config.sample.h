@@ -38,9 +38,9 @@
 #define MQTT_PASSWORD "mtt@23377"
 
 //config mqtt topic
-#define TOPIC_PUBLISH "hue/current/tudien_2"				// config topic: "function/ position" for device
-#define TOPIC_SUBSCRIBE "hue/current/tudien_2"
-#define TOPIC_LWT "hue/current/tudien_2/lwt"
+#define TOPIC_PUBLISH "current/tudien_2"				// config topic: "function/ position" for device
+#define TOPIC_SUBSCRIBE "current/tudien_2"
+#define TOPIC_LWT "current/tudien_2/lwt"
 #define MESSAGE_LWT "offline"
 
 //config function of device 

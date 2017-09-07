@@ -44,9 +44,9 @@ char macID[48];
 uint8_t sta_mac[6];
 
 // config command to control esp32
-char cmdUpdate[20] = "update";  // update new firmware
-char cmdGetMac[20] = "get_mac_address";  // get mac address
-char cmdGetVersion[20] = "get_version"; // get current firmware version
+char cmdUpdate[25] = "update";  // update new firmware
+char cmdGetMac[25] = "get_mac_address";  // get mac address
+char cmdGetVersion[25] = "get_firmware_version"; // get current firmware version
 
 
 // adc variable 
@@ -158,13 +158,13 @@ cJSON *jsonDataEncode (double data1, double data2, double data3) {
     
     jsonString = cJSON_CreateObject();  
 
-    // cJSON_AddItemToObject(jsonString, "mac", cJSON_CreateString(CLIENT_ID));
-    // cJSON_AddItemToObject(jsonString, "center", cJSON_CreateString(CENTER_NAME));
-    // cJSON_AddItemToObject(jsonString, "position", cJSON_CreateString(DEVICE_POSITION));
-    // cJSON_AddItemToObject(jsonString, "current", current = cJSON_CreateObject());
-    cJSON_AddNumberToObject(jsonString, "value1", data1);
-    cJSON_AddNumberToObject(jsonString, "value2", data2);
-    cJSON_AddNumberToObject(jsonString, "value3", data3);
+    cJSON_AddItemToObject(jsonString, "mac", cJSON_CreateString(CLIENT_ID));
+    cJSON_AddItemToObject(jsonString, "center", cJSON_CreateString(CENTER_NAME));
+    cJSON_AddItemToObject(jsonString, "position", cJSON_CreateString(DEVICE_POSITION));
+    cJSON_AddItemToObject(jsonString, "current", current = cJSON_CreateObject());
+    cJSON_AddNumberToObject(current, "value1", data1);
+    cJSON_AddNumberToObject(current, "value2", data2);
+    cJSON_AddNumberToObject(current, "value3", data3);
 
     return jsonString;
 }
