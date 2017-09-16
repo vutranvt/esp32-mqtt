@@ -74,11 +74,7 @@ void connected_cb(void *self, void *params)
 {
     mqtt_client *client = (mqtt_client *)self;
 
-    char topicPublish[48] = "";
-    strcat(topicPublish, TOPIC_PUBLISH);
-    strcat(topicPublish, TOPIC_MAC_ADDRESS);
-
-    mqtt_subscribe(client, topicPublish, 0);
+    mqtt_subscribe(client, TOPIC_MAC_ADDRESS, 0);
     // mqtt_subscribe(client, TOPIC_PUBLISH, 0);
 
 }
@@ -93,21 +89,15 @@ void reconnect_cb(void *self, void *params)
 void publish_data(void *self, void *params)
 {
 	mqtt_client *client = (mqtt_client *)self;
-    char topicPublish[48] = "";
-    char msgPublish[48] = "";
-
-    strcat(topicPublish, TOPIC_PUBLISH);
-
-    strcat(topicPublish, TOPIC_MAC_ADDRESS);
-    // strcat(msgPublish, "Mac Address:");
-    // strcat(msgPublish, macID);
-    // INFO("[APP] Version: %s\n", topicPublish);
+    // char topicPublish[48] = "";
+    // strcat(topicPublish, TOPIC_PUBLISH);
+    // strcat(topicPublish, TOPIC_MAC_ADDRESS);
 
     mqtt_subscribe(client, TOPIC_PUBLISH, 0);
 
     vTaskDelay(2000/portTICK_PERIOD_MS);
 
-	mqtt_publish(client, topicPublish, macID, strlen(macID), 0, 0);
+	mqtt_publish(client, TOPIC_MAC_ADDRESS, macID, strlen(macID), 0, 0);
 	vTaskDelay(2000/portTICK_PERIOD_MS);
 }
 void subscribe_cb(void *self, void *params)
@@ -115,11 +105,7 @@ void subscribe_cb(void *self, void *params)
     INFO("[APP] Subscribe ok, test publish msg\n");
     mqtt_client *client = (mqtt_client *)self;
 
-    char topicPublish[48] = "";
-    strcat(topicPublish, TOPIC_PUBLISH);
-    strcat(topicPublish, TOPIC_MAC_ADDRESS);
-
-    mqtt_publish(client, topicPublish, macID, strlen(macID), 0, 0);
+    mqtt_publish(client, TOPIC_MAC_ADDRESS, macID, strlen(macID), 0, 0);
     vTaskDelay(2000/portTICK_PERIOD_MS);
 }
 
@@ -158,7 +144,7 @@ cJSON *jsonDataEncode (double data1, double data2, double data3) {
     
     jsonString = cJSON_CreateObject();  
 
-    // cJSON_AddItemToObject(jsonString, "mac", cJSON_CreateString(CLIENT_ID));
+    // cJSON_AddItemToObject(jsonString, "mac", cJSON_CreateString(macID));
     cJSON_AddItemToObject(jsonString, "center", cJSON_CreateString(CENTER_NAME));
     cJSON_AddItemToObject(jsonString, "position", cJSON_CreateString(DEVICE_POSITION));
     cJSON_AddItemToObject(jsonString, "current", current = cJSON_CreateObject());
@@ -244,7 +230,6 @@ void data_cb(void *self, void *params)
         // update firmware
         INFO("[APP] update firmware ............\n");
         if(strcmp(cmd, cmdUpdate)==0){
-            INFO("[APP] Publish data[%s]\n",event_data->data);
             INFO("[APP] update firmware ............\n");
 
             ota_example_task(client);
@@ -253,24 +238,14 @@ void data_cb(void *self, void *params)
         // publish mac address to broker
         if(strcmp(cmd, cmdGetMac)==0){
             INFO("[APP] get mac id ............\n");
-
-            char topicPub[48] = "";
-            strcat(topicPub, TOPIC_PUBLISH);
-            strcat(topicPub, TOPIC_MAC_ADDRESS);
-
-            mqtt_publish(client, topicPub, macID, strlen(macID), 0, 0);
+            mqtt_publish(client, TOPIC_MAC_ADDRESS, macID, strlen(macID), 0, 0);
             vTaskDelay(2000/portTICK_PERIOD_MS);
         }
 
         // publish current firmware version to broker
         if(strcmp(cmd, cmdGetVersion)==0){
             INFO("[APP] get app version ............\n");   
-
-            char topicPub[48] = "";
-            strcat(topicPub, TOPIC_PUBLISH);
-            strcat(topicPub, TOPIC_FIRMWARE_VERSION);
-
-            mqtt_publish(client, topicPub, FIRMWARE_VERSION, strlen(FIRMWARE_VERSION), 0, 0);
+            mqtt_publish(client, TOPIC_FIRMWARE_VERSION, FIRMWARE_VERSION, strlen(FIRMWARE_VERSION), 0, 0);
             vTaskDelay(2000/portTICK_PERIOD_MS);
         }
     }
@@ -436,7 +411,7 @@ void adc1Task(void* arg)
         // temp = sqrt(avr/(double)sampleTime);
         // printf("adc1 = %.2f\n",temp);
 
-    	result = sqrt(avr/(double)sampleTime) * (22/4096.0); // Lay gia tri trung binh
+    	result = sqrt(avr/(double)sampleTime) * (CALIBRATION_RATIO/4096.0); // Lay gia tri trung binh
 		
     	result = result - 0.10;
 
@@ -445,7 +420,7 @@ void adc1Task(void* arg)
     	else
     		result = result + 0.10;
 		
-    	result = result * 10;
+    	result = result * TI_RATIO;
 		// printf("adc1 = %.2f\n",result);
 		result = result;
 		
@@ -485,7 +460,7 @@ void adc2Task(void* arg)
         temp = sqrt(avr/(double)sampleTime);
         // printf("adc2 = %.2f\n",temp);
 
-    	result = sqrt(avr/(double)sampleTime) * (22/4096.0); // Lay gia tri trung binh
+    	result = sqrt(avr/(double)sampleTime) * (CALIBRATION_RATIO/4096.0); // Lay gia tri trung binh
 		
 		
     	result = result - 0.10;
@@ -497,7 +472,7 @@ void adc2Task(void* arg)
     	}
 		
 		
-    	result = result * 10;	//// He so TI
+    	result = result * TI_RATIO;	//// He so TI
 		// printf("adc 2 = %.2f\n",result);
 		
     	ampAdc2 = (ampAdc2 + result) / (counter2 + 1);
@@ -538,7 +513,7 @@ void adc3Task(void* arg)
         temp = sqrt(avr/(double)sampleTime);
         // printf("adc3 = %.2f\n",temp);
 
-    	result = sqrt(avr/(double)sampleTime) * (22/4096.0); // Lay gia tri trung binh
+    	result = sqrt(avr/(double)sampleTime) * (CALIBRATION_RATIO/4096.0); // Lay gia tri trung binh
 		
 		
     	result = result - 0.10;
@@ -548,7 +523,7 @@ void adc3Task(void* arg)
     	else
     		result = result + 0.10;
     	
-    	result = result * 10;
+    	result = result * TI_RATIO;
 		// printf("adc3 = %.2f\n",result);
 
     	ampAdc3 = (ampAdc3 + result) / (counter3 + 1);

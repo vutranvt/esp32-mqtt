@@ -28,29 +28,27 @@
 //#define CPU_FREQ_160MHZ
 
 // config wifi
-#define WIFI_SSID "Phong Ky Thuat"
-#define WIFI_PASS "123456789"
+#define WIFI_SSID "STARLIGHT"
+#define WIFI_PASS "starlight123"
 
 //config mqtt user
-#define CLIENT_ID "24:0A:C4:10:F9:C8"	// asjust mqtt id client for each device
-// #define CLIENT_ID "30:AE:A4:08:6D:38"	
+
+#define CLIENT_ID "ID_24:0A:C4:0F:17:2C"	// config for each device
 #define MQTT_USERNAME "esp32"
 #define MQTT_PASSWORD "mtt@23377"
 
 //config mqtt topic
-#define TOPIC_PUBLISH "current/tudien_1"				// config topic: "function/ position" for device
-#define TOPIC_SUBSCRIBE "current/tudien_1"
-#define TOPIC_LWT "current/tudien_1/lwt"
+#define TOPIC_PUBLISH "bmt/current/tudien_nong"								// config fot each device
+#define TOPIC_SUBSCRIBE "bmt/current/tudien_nong"							// config fot each device
+#define TOPIC_MAC_ADDRESS "bmt/current/tudien_nong/macaddress"				// config fot each device
+#define TOPIC_FIRMWARE_VERSION "bmt/current/tudien_nong/firmwareversion"	// config fot each device
+#define TOPIC_LWT "bmt/current/tudien_nong/lwt"								// config fot each device
 #define MESSAGE_LWT "offline"
 
 //config function of device 
-#define CENTER_NAME "hue"			// config center for each device
-#define DEVICE_FUNCTION "current"	// config function for each device
-#define DEVICE_POSITION "tudien_1"	// config position of device
-
-// config mqtt for sensor device
-#define TOPIC_MAC_ADDRESS "/macaddress"
-#define TOPIC_FIRMWARE_VERSION "/firmwareversion"
+#define CENTER_NAME "bmt"				// config for each device
+#define DEVICE_FUNCTION "current"		// config for each device
+#define DEVICE_POSITION "tudien_nong"	// config for each device
 
 // config ota update firmware
 #define FIRMWARE_VERSION "1.0"
@@ -68,6 +66,9 @@
 #define adcZero1 2291
 #define adcZero2 2217
 #define adcZero3 2291
+
+#define CALIBRATION_RATIO 22
+#define TI_RATIO 30	//50/5A:10	//150/5A:30
 
 // change to branch develop on sublime
 
