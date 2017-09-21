@@ -108,7 +108,7 @@ void connected_cb(void *self, void *params)
 {
     mqtt_client *client = (mqtt_client *)self;
 
-    mqtt_subscribe(client, TOPIC_MAC_ADDRESS, 0);
+    mqtt_subscribe(client, TOPIC_PUBLISH, 0);
     // mqtt_subscribe(client, TOPIC_PUBLISH, 0);
 
 }
@@ -120,18 +120,33 @@ void reconnect_cb(void *self, void *params)
 {
 
 }
+// mycode
+cJSON *beginData() {
+    cJSON *jsonString;  // json string    
+    jsonString = cJSON_CreateObject();  
+
+    cJSON_AddItemToObject(jsonString, "firmwareversion", cJSON_CreateString(FIRMWARE_VERSION));
+    cJSON_AddItemToObject(jsonString, "macaddress", cJSON_CreateString(macID));
+    return jsonString;
+}
+// mycode
 void publish_data(void *self, void *params)
 {
 	mqtt_client *client = (mqtt_client *)self;
-    // char topicPublish[48] = "";
+    // char msgPublish[48] = "";
     // strcat(topicPublish, TOPIC_PUBLISH);
     // strcat(topicPublish, TOPIC_MAC_ADDRESS);
+
+    cJSON *root;
+    root = beginData();
+    char *jsonMsg = cJSON_Print(root);
+    cJSON_Delete(root);
 
     mqtt_subscribe(client, TOPIC_PUBLISH, 0);
 
     vTaskDelay(2000/portTICK_PERIOD_MS);
 
-	mqtt_publish(client, TOPIC_MAC_ADDRESS, macID, strlen(macID), 0, 0);
+	mqtt_publish(client, TOPIC_PUBLISH, jsonMsg, strlen(jsonMsg), 0, 0);
 	vTaskDelay(2000/portTICK_PERIOD_MS);
 }
 void subscribe_cb(void *self, void *params)
@@ -139,7 +154,7 @@ void subscribe_cb(void *self, void *params)
     INFO("[APP] Subscribe ok, test publish msg\n");
     mqtt_client *client = (mqtt_client *)self;
 
-    mqtt_publish(client, TOPIC_MAC_ADDRESS, macID, strlen(macID), 0, 0);
+    mqtt_publish(client, TOPIC_PUBLISH, macID, strlen(macID), 0, 0);
     vTaskDelay(2000/portTICK_PERIOD_MS);
 }
 
@@ -162,9 +177,8 @@ char *jsonCmdDecode(char *string) {
 
 /* json_data send to server
 json_data = {
-    "mac" : "30:AE:A4:08:6D:38", // sensor mac id 
     "center" : "bmt",
-    "position" : "tudien_nong",
+    "position" : "tudien_tong",
     "current" : {
         "value1" : "112",   // phase1 value
         "value2" : "15",    // phase2 value
@@ -190,7 +204,6 @@ cJSON *jsonDataEncode (double data1, double data2, double data3) {
 }
 
 
- 
 void publish_cb(void *self, void *params)
 {
     INFO("[JSON] cJSON AND PUBLISH .............. ");
@@ -290,7 +303,7 @@ mqtt_settings settings = {
 #if defined(CONFIG_MQTT_SECURITY_ON)         
     .port = 8883, // encrypted
 #else
-    .port = 1883, // unencrypted
+    .port = 1884, // unencrypted
 #endif    
     .client_id = CLIENT_ID,
     .username = MQTT_USERNAME,

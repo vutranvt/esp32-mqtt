@@ -31,11 +31,11 @@
 
 
 // config wifi
-#define WIFI_SSID "STARLIGHT"
-#define WIFI_PASS "starlight123"
+// #define WIFI_SSID "STARLIGHT"
+// #define WIFI_PASS "starlight123"
 
-// #define WIFI_SSID "Phong Ky Thuat"
-// #define WIFI_PASS "123456789"
+#define WIFI_SSID "Phong Ky Thuat"
+#define WIFI_PASS "123456789"
 
 //config mqtt user
 
