@@ -69,6 +69,40 @@ static EventGroupHandle_t wifi_event_group;
    to the AP with an IP? */
 const int CONNECTED_BIT = BIT0;
 
+char *topic_mac_address ="";
+char *topic_publish ="";
+char *topic_subscribe ="";
+char *topic_firmware_version ="";
+
+
+void add_topic() {
+    
+    strcat(topic_publish, CENTER_NAME);
+    strcat(topic_publish, "/");
+    strcat(topic_publish, DEVICE_FUNCTION);
+    strcat(topic_publish, "/");
+    strcat(topic_publish, DEVICE_POSITION);
+
+    strcat(topic_subscribe, CENTER_NAME);
+    strcat(topic_subscribe, DEVICE_FUNCTION);
+    strcat(topic_subscribe, DEVICE_POSITION);
+
+    strcat(topic_mac_address, CENTER_NAME);
+    strcat(topic_mac_address, "/");
+    strcat(topic_mac_address, DEVICE_FUNCTION);
+    strcat(topic_mac_address, "/");
+    strcat(topic_mac_address, DEVICE_POSITION);
+    strcat(topic_mac_address, "/macaddress");
+
+    strcat(topic_firmware_version, CENTER_NAME);
+    strcat(topic_firmware_version, "/");
+    strcat(topic_firmware_version, DEVICE_FUNCTION);
+    strcat(topic_firmware_version, "/");
+    strcat(topic_firmware_version, DEVICE_POSITION);
+    strcat(topic_mac_address, "/firmwareversion");
+
+}
+
 
 void connected_cb(void *self, void *params)
 {
@@ -226,9 +260,9 @@ void data_cb(void *self, void *params)
         i++;
     }
 
-    if(!strcmp(mac, macID)){
+    // if(!strcmp(mac, macID)){
         // update firmware
-        INFO("[APP] update firmware ............\n");
+        // INFO("[APP] update firmware ............\n");
         if(strcmp(cmd, cmdUpdate)==0){
             INFO("[APP] update firmware ............\n");
 
@@ -248,7 +282,7 @@ void data_cb(void *self, void *params)
             mqtt_publish(client, TOPIC_FIRMWARE_VERSION, FIRMWARE_VERSION, strlen(FIRMWARE_VERSION), 0, 0);
             vTaskDelay(2000/portTICK_PERIOD_MS);
         }
-    }
+    // }
 }
 
 mqtt_settings settings = {
@@ -262,7 +296,7 @@ mqtt_settings settings = {
     .username = MQTT_USERNAME,
     .password = MQTT_PASSWORD,
     .clean_session = 0,
-    .keepalive = 50,
+    .keepalive = 120,
     .lwt_topic = TOPIC_LWT,
     .lwt_msg = MESSAGE_LWT,
     .lwt_qos = 0,
@@ -399,16 +433,19 @@ void adc1Task(void* arg)
         maxValue = 0;
         while(sampleTime < 2000)
         {
-        	adcValue = adc1_get_voltage(PIN_ADC1) - adcZero1;
-    		avr = avr + (double)(adcValue * adcValue);
-    		/*if(adcValue > maxValue){
-                maxValue = adcValue;
-            }*/
-            sampleTime++;
-    		//printf("%d\n",adcValue);
+            #if defined(RAW_ADC)
+                adcValue = adc1_get_voltage(PIN_ADC1);
+            #else
+            	adcValue = adc1_get_voltage(PIN_ADC1) - adcZero1;
+        		avr = avr + (double)(adcValue * adcValue);
+        		/*if(adcValue > maxValue){
+                    maxValue = adcValue;
+                }*/
+            #endif
+                sampleTime++;
         }
 
-        // temp = sqrt(avr/(double)sampleTime);
+        temp = sqrt(avr/(double)sampleTime);
         // printf("adc1 = %.2f\n",temp);
 
     	result = sqrt(avr/(double)sampleTime) * (CALIBRATION_RATIO/4096.0); // Lay gia tri trung binh
@@ -421,11 +458,11 @@ void adc1Task(void* arg)
     		result = result + 0.10;
 		
     	result = result * TI_RATIO;
-		// printf("adc1 = %.2f\n",result);
-		result = result;
-		
-    	ampAdc1 = (ampAdc1 + result) / (counter1 + 1);
-
+        #if defined(RAW_ADC)
+            ampAdc1 = (ampAdc1 + adcValue) / (counter1 + 1);
+        #else		
+            ampAdc1 = (ampAdc1 + result) / (counter1 + 1);
+        #endif
     	counter1 = 1;
 
     	vTaskDelay(50/portTICK_PERIOD_MS);
@@ -439,7 +476,7 @@ void adc2Task(void* arg)
 	unsigned long sampleTime = 0;
     double avr = 0;
     double result = 0;
-    double temp;
+    double temp = 0;
 
 	// initialize ADC
     adc1_config_width(ADC_WIDTH_12Bit);
@@ -451,10 +488,13 @@ void adc2Task(void* arg)
     	avr = 0;
         while(sampleTime < 2000)
         {
-        	adcValue = adc1_get_voltage(PIN_ADC2) - adcZero2;
-    		avr = avr + (double)(adcValue * adcValue);
-    		sampleTime++;
-
+            #if defined(RAW_ADC)
+                adcValue = adc1_get_voltage(PIN_ADC2);
+            #else
+            	adcValue = adc1_get_voltage(PIN_ADC2) - adcZero2;
+        		avr = avr + (double)(adcValue * adcValue);
+            #endif
+        		sampleTime++;
         }
 
         temp = sqrt(avr/(double)sampleTime);
@@ -471,13 +511,14 @@ void adc2Task(void* arg)
     		result = result + 0.10;
     	}
 		
-		
     	result = result * TI_RATIO;	//// He so TI
-		// printf("adc 2 = %.2f\n",result);
-		
-    	ampAdc2 = (ampAdc2 + result) / (counter2 + 1);
 
-    	
+        #if defined(RAW_ADC)
+            ampAdc2 = (ampAdc2 + adcValue) / (counter2 + 1);
+        #else		
+            ampAdc2 = (ampAdc2 + result) / (counter2 + 1);
+        #endif
+
     	counter2 = 1;
 
     	vTaskDelay(50/portTICK_PERIOD_MS);
@@ -504,10 +545,13 @@ void adc3Task(void* arg)
     	avr = 0;
         while(sampleTime < 2000)
         {
-        	adcValue = adc1_get_voltage(PIN_ADC3) - adcZero3;
-    		avr = avr + (double)(adcValue * adcValue);
-    		sampleTime++;
-    		//printf("%d\n",adcValue);
+            #if defined(RAW_ADC)
+                adcValue = adc1_get_voltage(PIN_ADC3);
+            #else
+                adcValue = adc1_get_voltage(PIN_ADC3) - adcZero3;
+        		avr = avr + (double)(adcValue * adcValue);
+            #endif
+            sampleTime++;
         }
 
         temp = sqrt(avr/(double)sampleTime);
@@ -526,7 +570,11 @@ void adc3Task(void* arg)
     	result = result * TI_RATIO;
 		// printf("adc3 = %.2f\n",result);
 
-    	ampAdc3 = (ampAdc3 + result) / (counter3 + 1);
+        #if defined(RAW_ADC)
+            ampAdc3 = (ampAdc3 + adcValue) / (counter3 + 1);
+        #else
+            ampAdc3 = (ampAdc3 + result) / (counter3 + 1);
+        #endif
     	counter3 = 1;
 
     	vTaskDelay(50/portTICK_PERIOD_MS);

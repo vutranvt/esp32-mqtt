@@ -27,28 +27,34 @@
 
 //#define CPU_FREQ_160MHZ
 
+// #define RAW_ADC
+
+
 // config wifi
 #define WIFI_SSID "STARLIGHT"
 #define WIFI_PASS "starlight123"
 
+// #define WIFI_SSID "Phong Ky Thuat"
+// #define WIFI_PASS "123456789"
+
 //config mqtt user
 
-#define CLIENT_ID "ID_24:0A:C4:0F:17:2C"	// config for each device
+#define CLIENT_ID "ID_24:0A:C4:12:1F:04"	// config for each device
 #define MQTT_USERNAME "esp32"
 #define MQTT_PASSWORD "mtt@23377"
 
 //config mqtt topic
-#define TOPIC_PUBLISH "bmt/current/tudien_nong"								// config fot each device
-#define TOPIC_SUBSCRIBE "bmt/current/tudien_nong"							// config fot each device
-#define TOPIC_MAC_ADDRESS "bmt/current/tudien_nong/macaddress"				// config fot each device
-#define TOPIC_FIRMWARE_VERSION "bmt/current/tudien_nong/firmwareversion"	// config fot each device
-#define TOPIC_LWT "bmt/current/tudien_nong/lwt"								// config fot each device
+#define TOPIC_PUBLISH "bmt/current/tudien_tong"								// config fot each device
+#define TOPIC_SUBSCRIBE "bmt/current/tudien_tong"							// config fot each device
+#define TOPIC_MAC_ADDRESS "bmt/current/tudien_tong/macaddress"				// config fot each device
+#define TOPIC_FIRMWARE_VERSION "bmt/current/tudien_tong/firmwareversion"	// config fot each device
+#define TOPIC_LWT "bmt/current/tudien_tong/lwt"								// config fot each device
 #define MESSAGE_LWT "offline"
 
 //config function of device 
 #define CENTER_NAME "bmt"				// config for each device
 #define DEVICE_FUNCTION "current"		// config for each device
-#define DEVICE_POSITION "tudien_nong"	// config for each device
+#define DEVICE_POSITION "tudien_tong"	// config for each device
 
 // config ota update firmware
 #define FIRMWARE_VERSION "1.0"
@@ -59,15 +65,23 @@
 #define TEXT_BUFFSIZE 1024
 
 // config adc
-#define PIN_ADC1 (ADC1_CHANNEL_0)		////GPIO 34
-#define PIN_ADC2 (ADC1_CHANNEL_3)		////GPIO 35
-#define PIN_ADC3 (ADC1_CHANNEL_6)		////GPIO 32
+#define PIN_ADC1 (ADC1_CHANNEL_0)		// GPIO 36 - VP
+#define PIN_ADC2 (ADC1_CHANNEL_7)		// GPIO 35
+#define PIN_ADC3 (ADC1_CHANNEL_6)		// GPIO 34
+// (ADC1_CHANNEL_0)		// GPIO 36 - VP
+// (ADC1_CHANNEL_1)		// GPIO 37
+// (ADC1_CHANNEL_2)		// GPIO 38
+// (ADC1_CHANNEL_3)		// GPIO 39 - VN
+// (ADC1_CHANNEL_4)		// GPIO 32
+// (ADC1_CHANNEL_5)		// GPIO 33
+// (ADC1_CHANNEL_6)		// GPIO 34
+// (ADC1_CHANNEL_7)		// GPIO 35
 
-#define adcZero1 2291
-#define adcZero2 2217
-#define adcZero3 2291
+#define adcZero1 2450
+#define adcZero2 2424
+#define adcZero3 2445
 
-#define CALIBRATION_RATIO 22
+#define CALIBRATION_RATIO 27
 #define TI_RATIO 30	//50/5A:10	//150/5A:30
 
 // change to branch develop on sublime
