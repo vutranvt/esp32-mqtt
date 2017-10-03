@@ -34,12 +34,12 @@
 // #define WIFI_SSID "STARLIGHT"
 // #define WIFI_PASS "starlight123"
 
-#define WIFI_SSID "Ban Dau Tu"
-#define WIFI_PASS "bdtnth123"
+#define WIFI_SSID "Phong Ky Thuat"
+#define WIFI_PASS "123456789"
 
 //config mqtt user
 
-#define CLIENT_ID "ID_24:0A:C4:12:1F:04"	// config for each device
+#define CLIENT_ID "esp_24:0A:C4:10:F9:C8"	// config for each device
 #define MQTT_USERNAME "esp32"
 #define MQTT_PASSWORD "mtt@23377"
 
@@ -82,7 +82,7 @@
 #define adcZero3 2445
 
 #define CALIBRATION_RATIO 27
-#define TI_RATIO 30	//50/5A:10	//150/5A:30
+#define TI_RATIO 80	//50/5A:10	//150/5A:30
 
 // change to branch develop on sublime
 

@@ -420,6 +420,7 @@ void wifi_conn_init(void)
 	
 	ESP_ERROR_CHECK(esp_wifi_get_mac(ESP_IF_WIFI_STA, sta_mac));
 	sprintf(macID, "%02X:%02X:%02X:%02X:%02X:%02X", sta_mac[0], sta_mac[1], sta_mac[2], sta_mac[3], sta_mac[4], sta_mac[5]);
+    printf("mac address: %s", macID);
 
 }
 
