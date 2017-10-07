@@ -289,10 +289,9 @@ void mqtt_sending_task(void *pvParameters)
     mqtt_client *client = (mqtt_client *)pvParameters;
     uint32_t msg_len, send_len;
 	bool connected = true;
-    mqtt_info("mqtt_sending_task");
 
-	// mqtt_publish(client, TOPIC_SUBSCRIBE, FIRMWARE_VERSION, strlen(FIRMWARE_VERSION), 0, 0);
-	// vTaskDelay(2000/portTICK_PERIOD_MS);
+    // mqtt_info("mqtt_sending_task");  //
+
 	client->settings->publish_data(client, NULL);
 	
     while (connected) {
@@ -332,7 +331,7 @@ void mqtt_sending_task(void *pvParameters)
             }
 			
         }
-        mqtt_info("End of mqtt_sending_task............................................................");////
+        // mqtt_info("End of mqtt_sending_task............................................................");////
     }
 	
 	closeclient(client);
@@ -366,7 +365,7 @@ void deliver_publish(mqtt_client *client, uint8_t *message, int length)
 
         mqtt_info("Data received: %d/%d bytes ", mqtt_len, total_mqtt_len);
         // config restart if the server broker happenned stopped  v
-        if(total_mqtt_len < 0)  esp_restart();
+        if(total_mqtt_len < (-30000))  esp_restart();
 
         if(client->settings->data_cb) {
             client->settings->data_cb(client, &event_data);
@@ -388,7 +387,7 @@ void mqtt_start_receive_schedule(mqtt_client* client)
     uint16_t msg_id;
 
     while (1) {
-    	mqtt_info("Start mqtt_start_receive_schedule............................................................");////
+    	// mqtt_info("Start mqtt_start_receive_schedule............................................................");////
 		
 		if (terminate_mqtt) break;
     	if (xMqttSendingTask == NULL) break;
@@ -468,7 +467,7 @@ void mqtt_start_receive_schedule(mqtt_client* client)
                 //client->settings->publish_cb(client, NULL);////
                 break;
         }
-        mqtt_info("End of mqtt_start_receive_schedule............................................................");////
+        // mqtt_info("End of mqtt_start_receive_schedule............................................................");////
     }
     mqtt_info("network disconnected");
     esp_restart();  // config restart -v

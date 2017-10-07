@@ -44,7 +44,7 @@ char macID[48];
 uint8_t sta_mac[6];
 
 // config command to control esp32
-char cmdUpdate[25] = "update";  // update new firmware
+char cmdUpdate[25] = "update_firmware";  // update new firmware
 char cmdGetMac[25] = "get_mac_address";  // get mac address
 char cmdGetVersion[25] = "get_firmware_version"; // get current firmware version
 
@@ -79,26 +79,26 @@ void add_topic() {
     
     strcat(topic_publish, CENTER_NAME);
     strcat(topic_publish, "/");
-    strcat(topic_publish, DEVICE_FUNCTION);
+    strcat(topic_publish, TYPE);
     strcat(topic_publish, "/");
-    strcat(topic_publish, DEVICE_POSITION);
+    strcat(topic_publish, LOCATION);
 
     strcat(topic_subscribe, CENTER_NAME);
-    strcat(topic_subscribe, DEVICE_FUNCTION);
-    strcat(topic_subscribe, DEVICE_POSITION);
+    strcat(topic_subscribe, TYPE);
+    strcat(topic_subscribe, LOCATION);
 
     strcat(topic_mac_address, CENTER_NAME);
     strcat(topic_mac_address, "/");
-    strcat(topic_mac_address, DEVICE_FUNCTION);
+    strcat(topic_mac_address, TYPE);
     strcat(topic_mac_address, "/");
-    strcat(topic_mac_address, DEVICE_POSITION);
+    strcat(topic_mac_address, LOCATION);
     strcat(topic_mac_address, "/macaddress");
 
     strcat(topic_firmware_version, CENTER_NAME);
     strcat(topic_firmware_version, "/");
-    strcat(topic_firmware_version, DEVICE_FUNCTION);
+    strcat(topic_firmware_version, TYPE);
     strcat(topic_firmware_version, "/");
-    strcat(topic_firmware_version, DEVICE_POSITION);
+    strcat(topic_firmware_version, LOCATION);
     strcat(topic_mac_address, "/firmwareversion");
 
 }
@@ -123,10 +123,26 @@ void reconnect_cb(void *self, void *params)
 // mycode
 cJSON *beginData() {
     cJSON *jsonString;  // json string    
+    cJSON *updateInfo;  // json string    
+    cJSON *deviceConfig;  // json string    
     jsonString = cJSON_CreateObject();  
 
-    cJSON_AddItemToObject(jsonString, "firmwareversion", cJSON_CreateString(FIRMWARE_VERSION));
-    cJSON_AddItemToObject(jsonString, "macaddress", cJSON_CreateString(macID));
+    cJSON_AddItemToObject(jsonString, "center", cJSON_CreateString(CENTER_NAME));
+    cJSON_AddItemToObject(jsonString, "type", cJSON_CreateString(TYPE));
+    cJSON_AddItemToObject(jsonString, "location", cJSON_CreateString(LOCATION));
+    cJSON_AddItemToObject(jsonString, "firmwareVersion", cJSON_CreateString(FIRMWARE_VERSION));
+    cJSON_AddItemToObject(jsonString, "macAddress", cJSON_CreateString(macID));
+    cJSON_AddItemToObject(jsonString, "updateInfo", updateInfo = cJSON_CreateObject());
+    cJSON_AddItemToObject(updateInfo, "server", cJSON_CreateString(SERVER_IP));
+    cJSON_AddItemToObject(updateInfo, "port", cJSON_CreateString(SERVER_PORT));
+    cJSON_AddItemToObject(updateInfo, "fileName", cJSON_CreateString(FILENAME));
+    cJSON_AddItemToObject(jsonString, "deviceConfig", deviceConfig = cJSON_CreateObject());
+    cJSON_AddNumberToObject(deviceConfig, "calibrationRatio", CALIBRATION_RATIO);
+    cJSON_AddNumberToObject(deviceConfig, "TIRatio", TI_RATIO);
+    cJSON_AddNumberToObject(deviceConfig, "adcZero1", adcZero1);
+    cJSON_AddNumberToObject(deviceConfig, "adcZero2", adcZero2);
+    cJSON_AddNumberToObject(deviceConfig, "adcZero3", adcZero3);
+
     return jsonString;
 }
 // mycode
@@ -194,7 +210,7 @@ cJSON *jsonDataEncode (double data1, double data2, double data3) {
 
     // cJSON_AddItemToObject(jsonString, "mac", cJSON_CreateString(macID));
     // cJSON_AddItemToObject(jsonString, "center", cJSON_CreateString(CENTER_NAME));
-    // cJSON_AddItemToObject(jsonString, "position", cJSON_CreateString(DEVICE_POSITION));
+    // cJSON_AddItemToObject(jsonString, "position", cJSON_CreateString(LOCATION));
     // cJSON_AddItemToObject(jsonString, "current", current = cJSON_CreateObject());
     cJSON_AddNumberToObject(jsonString, "value1", data1);
     cJSON_AddNumberToObject(jsonString, "value2", data2);
@@ -206,7 +222,7 @@ cJSON *jsonDataEncode (double data1, double data2, double data3) {
 
 void publish_cb(void *self, void *params)
 {
-    INFO("[JSON] cJSON AND PUBLISH .............. ");
+    // INFO("[JSON] cJSON AND PUBLISH .............. ");
 	mqtt_client *client = (mqtt_client *)self;
 	
 	double data1, data2, data3;
@@ -241,11 +257,11 @@ void data_cb(void *self, void *params)
         char *topic = malloc(event_data->topic_length + 1);
         memcpy(topic, event_data->topic, event_data->topic_length);
         topic[event_data->topic_length] = 0;
-        INFO("[APP] Publish topic: %s\n", topic);
+        // INFO("[APP] Publish topic: %s\n", topic);
         free(topic);
     }
 
-    INFO("[APP] Publish data[%d/%d bytes]\n", event_data->data_length + event_data->data_offset, event_data->data_total_length);
+    // INFO("[APP] Publish data[%d/%d bytes]\n", event_data->data_length + event_data->data_offset, event_data->data_total_length);
 
     uint16_t i = 0;
     uint16_t j = event_data->data_total_length;
